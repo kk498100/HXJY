@@ -55,9 +55,7 @@ function queryPrice(){
             var minPrice = item.m && item.m > 0 ? item.m : '--';
             $(trNode).find('.caozuo').html('<span class="f_hongse jinjia_tab_span1">'+maxPrice+'</span>'+'<span class="f_lvse jinjia_tab_span1 bor_no">'+minPrice+'</span>');
           }
-
         } else {
-
           if(!item.l || Number(item.s) <= 0){
             $(trNode).find('.xiaoshou').text('--');
           }else if(Number(salePrice) > Number(item.s)){
@@ -78,15 +76,17 @@ function queryPrice(){
         }
         var buyProductType = $('.dingjiaDialog .product_type').val();
         if(buyProductType && buyProductType == item.y){
-          $('.dingjiaDialog .price').val('楼 '+item.b);
+          $('.dingjiaDialog .price').val('¥ '+item.b);
           $('.dingjiaDialog .time').val(item.t);
           jisuan();
         }
       });
     }
   });
-  setTimeout(queryPrice, 1000);
+  // setTimeout(queryPrice, 1000);
 }
+
+setInterval(queryPrice, 1000);
 
 $('.dingjiaDialog .bg_cancel,.dingjiaDialog .close').click(function(){
   $(this).parents('.dingjiaDialog').hide();
@@ -104,7 +104,7 @@ $(document).on('click','.jinjia_tab .btn',function () {
       var price = _this.parents('tr').find('.huishou').text();
       var productType = _this.parents('tr').data('type');
       $('.dingjiaDialog .product_type').val(productType);
-      $('.dingjiaDialog .price').val('楼 '+price);
+      $('.dingjiaDialog .price').val('¥ '+price);
       $('.dingjiaDialog .product_name').text(productName);
       $('.dingjiaDialog').show();
       $('.bm_dialogBg').show();
@@ -114,14 +114,14 @@ $(document).on('click','.jinjia_tab .btn',function () {
       $('#saler').text(member.name);
       if(member.credit && member.credit > 0){
         $('.dingjiaDialog .creditP').show();
-        $('.dingjiaDialog .credit').val('楼 '+member.credit);
+        $('.dingjiaDialog .credit').val('¥ '+member.credit);
       }else{
         $('.dingjiaDialog .creditP').hide();
         $('.dingjiaDialog .credit').val('0');
       }
       if(member.balance && member.balance > 0){
         $('.dingjiaDialog .balanceP').show();
-        $('.dingjiaDialog .balance').val('楼 '+member.balance);
+        $('.dingjiaDialog .balance').val('¥ '+member.balance);
       }else{
         $('.dingjiaDialog .balanceP').hide();
         $('.dingjiaDialog .balance').val('0');
@@ -142,10 +142,10 @@ $(document).on('keyup','.dingjiaDialog .bookWeight',function () {
   jisuan();
 });
 
-//瀹氫环
+//定价
 function place(){
   var flag = true;
-  $('#dingjiaForm .bg_save').attr('disabled','disabled').text('鎻愪氦涓�...');
+  $('#dingjiaForm .bg_save').attr('disabled','disabled').text('提交中...');
   $('#dingjiaForm .required').each(function(){
     var value = $.trim($(this).val());
     if(!value){
@@ -160,60 +160,60 @@ function place(){
     }
   });
   if(!flag){
-    $('#dingjiaForm .bg_save').removeAttr('disabled').text('纭畾');
+    $('#dingjiaForm .bg_save').removeAttr('disabled').text('确定');
     return;
   }
   if(Number($('#buyMin').val()) > Number($('#dingjiaForm .bookWeight').val().replaceAll(',',''))){
-    webToast('鍥炶喘鍏嬮噸涓嶈兘灏戜簬'+$('#buyMin').val()+'鍏�');
-    $('#dingjiaForm .bg_save').removeAttr('disabled').text('纭畾');
+    webToast('回购克重不能少于'+$('#buyMin').val()+'克');
+    $('#dingjiaForm .bg_save').removeAttr('disabled').text('确定');
     return;
   }
   if(Number($('#buyMax').val()) < Number($('#dingjiaForm .bookWeight').val().replaceAll(',',''))){
-    webToast('鍥炶喘鍏嬮噸涓嶈兘澶氫簬'+$('#buyMax').val()+'鍏�');
-    $('#dingjiaForm .bg_save').removeAttr('disabled').text('纭畾');
+    webToast('回购克重不能多于'+$('#buyMax').val()+'克');
+    $('#dingjiaForm .bg_save').removeAttr('disabled').text('确定');
     return;
   }
   var checked=$('#agreeCheckbox').is(':checked');
   if(!checked){
-    $('#dingjiaForm .bg_save').removeAttr('disabled').text('纭畾');
-    webToast('璇烽槄璇诲苟鍚屾剰鍦ㄧ嚎瀹氫环鏈嶅姟鍗忚');
+    $('#dingjiaForm .bg_save').removeAttr('disabled').text('确定');
+    webToast('请阅读并同意在线定价服务协议');
     return false;
   }
   $.post('/order/place',$('#dingjiaForm').serialize(),function(res){
     if(res != null && res.code == 1){
-      webToast('瀹氫环鎴愬姛');
+      webToast('定价成功');
       location.href='/payment/pay/'+res.data+'?merchant='+$('#merchant').val();
     }else{
-      $('#dingjiaForm .bg_save').removeAttr('disabled').text('纭畾');
+      $('#dingjiaForm .bg_save').removeAttr('disabled').text('确定');
       webToast(res.msg);
     }
   }).fail(function() {
-    $('#dingjiaForm .bg_save').removeAttr('disabled').text('纭畾');
-    webToast('绯荤粺寮傚父锛岃绋嶅悗鍐嶈瘯');
+    $('#dingjiaForm .bg_save').removeAttr('disabled').text('确定');
+    webToast('系统异常，请稍后再试');
   });
 }
-//璁＄畻浠锋牸
+//计算价格
 function jisuan(){
   var rate = $('#depositRate').val();
   var bookWeight = $.trim($('.dingjiaDialog .bookWeight').val().replaceAll(',',''));
-  var price = $.trim($('.dingjiaDialog .price').val().replaceAll('楼',''));
-  var credit = $.trim($('.dingjiaDialog .credit').val().replaceAll('楼',''));
-  var balance = $.trim($('.dingjiaDialog .balance').val().replaceAll('楼',''));
+  var price = $.trim($('.dingjiaDialog .price').val().replaceAll('¥',''));
+  var credit = $.trim($('.dingjiaDialog .credit').val().replaceAll('¥',''));
+  var balance = $.trim($('.dingjiaDialog .balance').val().replaceAll('¥',''));
   var deposit = (bookWeight*rate - Number(credit)).toFixed(2);
   if(deposit <=0){
-    $('.dingjiaDialog .deposit').val('楼 0.00');
+    $('.dingjiaDialog .deposit').val('¥ 0.00');
     return;
   }
   deposit = (Number(deposit) - Number(balance)).toFixed(2);
   if(deposit <=0){
-    $('.dingjiaDialog .deposit').val('楼 0.00');
+    $('.dingjiaDialog .deposit').val('¥ 0.00');
   }else{
-    $('.dingjiaDialog .deposit').val('楼 ' + deposit);
+    $('.dingjiaDialog .deposit').val('¥ ' + deposit);
   }
 }
 
 function loginCallback(){
-  webToast('鐧诲綍鎴愬姛');
+  webToast('登录成功');
   location.reload();
 }
 

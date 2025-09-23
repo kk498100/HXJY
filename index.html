@@ -1,4 +1,5 @@
-<html class="am-touch js cssanimations" lang="en"><head>
+<html class="am-touch js cssanimations" lang="zh-CN">
+<head>
   <meta charset="UTF-8">
   <title>鸿兴寄售公司(鸿兴金业)-珠宝回收、销售、定制</title>
   <meta content="IE=edge" http-equiv="X-UA-Compatible">
@@ -6,9 +7,9 @@
   <meta content="telephone=no" name="format-detection">
   <meta content="webkit" name="renderer">
   <meta content="no-siteapp" http-equiv="Cache-Control">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
   <link rel="stylesheet" href="./css/amazeui.min.css?v=1.1.7">
   <link rel="stylesheet" href="./css/index.css?v=1.1.7">
-  <script src="https://hm.baidu.com/hm.js?1742c1853010ddf23de9b71bfb812eca"></script>
   <script type="text/javascript" src="./js/jquery.min.js?v=1.1.7"></script>
   <style>
     #header{height:150px;}
@@ -103,14 +104,6 @@
 <script type="text/javascript" src="./js/dingjia.js?v=1.1.7"></script>
 <script type="text/javascript" src="./js/toast.js?v=1.1.7"></script>
 <script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?1742c1853010ddf23de9b71bfb812eca";
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(hm, s);
-})();
-
 $.get('https://www.yunjintong.cn/parameter?key=zhihuan',function(res){
   if(res != null && res.code == 1 && res.data != null){
     $('.jinjia_tab').find('tr[data-type="242_au_1604"]').find('.zhihuan').text('置换每克优惠'+res.data+'元');
@@ -150,7 +143,9 @@ function curentTime() {
   $('#Servertime').text(clock);
 }
 curentTime();
-setInterval('curentTime()', 1000);
+setInterval(function() {
+  curentTime()
+}, 1000);
 </script>
 
 
