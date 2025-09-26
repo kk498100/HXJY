@@ -7,15 +7,32 @@ var u = navigator.userAgent;
 var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
 var isWeixin = u.indexOf('MicroMessenger') > -1; //微信
 
+function isWeekdayTradingTime() {
+  const now = new Date();
+  const day = now.getDay();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const totalMinutes = hours * 60 + minutes;
+
+  // 周一 00:00 至 周五 23:59
+  if (day === 1) { // 周一
+    return totalMinutes >= 0; // 周一00:00开始
+  } else if (day >= 2 && day <= 4) { // 周二至周四
+    return true; // 全天都是
+  } else if (day === 5) { // 周五
+    return totalMinutes <= 23 * 60 + 59; // 周五23:59结束
+  }
+
+  return false; // 周六和周日
+}
+
 queryStatus();
 function queryStatus(){
-  $.get('https://www.yunjintong.cn/price/status?time='+new Date().getTime(),function(res){
-    if(res.code == 1 && res.data){
-      $('#openStatus').text('开盘');
-    }else{
-      $('#openStatus').text('停盘');
-    }
-  });
+  if (isWeekdayTradingTime) {
+    $('#openStatus').text('开盘');
+  } else {
+    $('#openStatus').text('停盘');
+  }
   setTimeout(queryStatus, 60000);
 }
 
